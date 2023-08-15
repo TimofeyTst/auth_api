@@ -1,0 +1,67 @@
+version: '3.7'
+
+services:
+  auth_api:
+    container_name: auth_api
+    image: auth_api_image
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/src
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth_db
+
+  auth_db:
+    container_name: auth_db
+    hostname: auth_db
+    image: library/postgres:14.1
+
+    environment:
+      - POSTGRES_USER=auth
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_DB=auth
+    volumes:
+      - app_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  auth_redis:
+    image: redis:6.2-alpine
+    hostname: redis
+    container_name: app_redis
+    command:
+      - 'redis-server'
+      - '--requirepass myStrongPassword'
+    ports:
+      - 6379:6379
+
+  test_db:
+    container_name: test_db
+    hostname: test_db
+    image: library/postgres:14.1
+
+    environment:
+      - POSTGRES_USER=auth
+      - POSTGRES_PASSWORD=auth
+      - POSTGRES_DB=auth_test
+    volumes:
+      - test_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+volumes:
+  app_pg_data:
+    driver: "local"
+
+  test_pg_data:
+    driver: "local"
+
+networks:
+  default:
+    external: true
+    name: auth_main
