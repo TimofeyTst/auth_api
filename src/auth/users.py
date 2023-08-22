@@ -1,24 +1,49 @@
+import re
 import uuid
-from typing import Optional
+from typing import Optional, Union
 
 from fastapi import Depends, Request
-from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
+from fastapi_users import (
+    BaseUserManager,
+    FastAPIUsers,
+    InvalidPasswordException,
+    UUIDIDMixin,
+)
 from fastapi_users.authentication import (
     AuthenticationBackend,
     BearerTransport,
-    JWTStrategy,
+    RedisStrategy,
 )
 from fastapi_users.db import SQLAlchemyUserDatabase
 
 from src.auth.config import auth_config
+from src.auth.schemas import UserCreate
 from src.database import User, get_user_db
+from src.redis import redis_client
 
 SECRET = auth_config.JWT_SECRET
+STRONG_PASSWORD_PATTERN = re.compile(r"^(?=.*[\d])(?=.*[!@#$%^&*])[\w!@#$%^&*]{6,128}$")
 
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     reset_password_token_secret = SECRET
     verification_token_secret = SECRET
+
+    async def validate_password(
+        self,
+        password: str,
+        user: Union[UserCreate, User],
+    ) -> None:
+        if len(password) < 8:
+            raise InvalidPasswordException(
+                reason="Password should be at least 8 characters"
+            )
+        if user.email in password:
+            raise InvalidPasswordException(reason="Password should not contain e-mail")
+        if not re.match(STRONG_PASSWORD_PATTERN, password):
+            raise InvalidPasswordException(
+                reason="Password must contain at least one lower character, one upper character, digit or special symbol"
+            )
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         print(f"User {user.id} has registered.")
@@ -41,14 +66,14 @@ async def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db
 bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
 
 
-def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
+def get_redis_strategy() -> RedisStrategy:
+    return RedisStrategy(redis_client, lifetime_seconds=3600)
 
 
 auth_backend = AuthenticationBackend(
     name="jwt",
     transport=bearer_transport,
-    get_strategy=get_jwt_strategy,
+    get_strategy=get_redis_strategy,
 )
 
 fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])

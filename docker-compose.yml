@@ -14,11 +14,12 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - auth_db
+      - db
+      - redis
 
-  auth_db:
-    container_name: auth_db
-    hostname: auth_db
+  db:
+    container_name: db
+    hostname: db
     image: library/postgres:14.1
 
     environment:
@@ -30,10 +31,10 @@ services:
     ports:
       - "5432:5432"
 
-  auth_redis:
+  redis:
     image: redis:6.2-alpine
     hostname: redis
-    container_name: app_redis
+    container_name: redis
     command:
       - 'redis-server'
       - '--requirepass myStrongPassword'

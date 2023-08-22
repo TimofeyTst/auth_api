@@ -35,6 +35,15 @@ docker compose exec auth_api format
 ```shell
 docker compose exec auth_api pytest
 ```
+
+### Redis connection
+```shell
+docker exec -it redis sh
+```
+
+```shell
+redis-cli -h redis -p 6379 -a myStrongPassword
+```
 ------
 ## Работа с запущенным сервером
 По умолчанию сервер доступен на локальной сети на порту 8000

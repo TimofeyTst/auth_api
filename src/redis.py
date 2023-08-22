@@ -4,8 +4,14 @@ from typing import Optional
 from pydantic import BaseModel
 
 from redis.asyncio import Redis
+from src.config import settings
 
-redis_client: Redis = None  # type: ignore
+redis_client = Redis(
+    host=settings.REDIS_HOST,
+    port=settings.REDIS_PORT,
+    password=settings.REDIS_PASSWORD,
+    decode_responses=True,
+)
 
 
 class RedisData(BaseModel):

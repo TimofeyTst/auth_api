@@ -1,5 +1,7 @@
 import sentry_sdk
 from fastapi import Depends, FastAPI
+
+# from redis import asyncio as aioredis
 from starlette.middleware.cors import CORSMiddleware
 
 from src.auth.schemas import UserCreate, UserRead, UserUpdate
@@ -8,25 +10,6 @@ from src.config import app_configs, settings
 from src.database import User
 
 app = FastAPI(**app_configs)
-
-
-# @app.on_event("startup")
-# async def startup_event():
-#     # Initialize Redis
-#     pool = aioredis.ConnectionPool.from_url(
-#         settings.REDIS_URL, max_connections=10, decode_responses=True
-#     )
-#     redis.redis_client = aioredis.Redis(connection_pool=pool)
-
-#     # # Initialize SQLAlchemy async session
-#     # async with AsyncSession() as session:
-#     #     yield session
-
-
-# @app.on_event("shutdown")
-# async def shutdown_event(session: AsyncSession = Depends()):
-#     await session.close()
-#     await redis.redis_client.close()
 
 
 app.add_middleware(
