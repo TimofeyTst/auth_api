@@ -15,6 +15,7 @@ from fastapi_users.authentication import (
     RedisStrategy,
 )
 from fastapi_users.db import SQLAlchemyUserDatabase
+from httpx_oauth.clients.google import GoogleOAuth2
 
 from src.auth.config import auth_config
 from src.auth.schemas import UserCreate
@@ -23,6 +24,11 @@ from src.redis import redis_client
 
 SECRET = auth_config.JWT_SECRET
 STRONG_PASSWORD_PATTERN = re.compile(r"^(?=.*[\d])(?=.*[!@#$%^&*])[\w!@#$%^&*]{6,128}$")
+
+
+google_oauth_client = GoogleOAuth2(
+    auth_config.GOOGLE_OAUTH_CLIENT_ID, auth_config.GOOGLE_OAUTH_CLIENT_SECRET
+)
 
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):

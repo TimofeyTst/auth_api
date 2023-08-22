@@ -3,6 +3,8 @@ from pydantic_settings import BaseSettings
 
 class AuthConfig(BaseSettings):
     JWT_SECRET: str
+    GOOGLE_OAUTH_CLIENT_ID: str
+    GOOGLE_OAUTH_CLIENT_SECRET: str
 
     # EXP in seconds
     AUTH_TOKEN_EXP: int = 60 * 60 * 24 * 365  # 365 days

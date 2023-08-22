@@ -34,7 +34,9 @@ async def healthcheck() -> dict[str, str]:
 
 @app.get("/authenticated-route")
 async def authenticated_route(user: User = Depends(current_active_user)):
-    return {"message": f"Hello {user.email} with id {user.id}!"}
+    return {
+        "message": f"Hello {user.username if user.username else user.email}! Your id is: '{user.id}'"
+    }
 
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])

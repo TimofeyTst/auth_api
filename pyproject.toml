@@ -14,7 +14,7 @@ pydantic = "^2.1.1"
 fastapi = "^0.101.1"
 uvicorn = {extras = ["standard"], version = "^0.23.2"}
 sentry-sdk = "^1.29.2"
-fastapi-users = {extras = ["sqlalchemy"], version = "^12.1.1"}
+fastapi-users = {extras = ["oauth", "redis", "sqlalchemy"], version = "^12.1.1"}
 pydantic-settings = "^2.0.3"
 psycopg2 = "^2.9.7"
 asyncpg = "^0.28.0"
