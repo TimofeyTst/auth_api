@@ -27,7 +27,9 @@ STRONG_PASSWORD_PATTERN = re.compile(r"^(?=.*[\d])(?=.*[!@#$%^&*])[\w!@#$%^&*]{6
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     reset_password_token_secret = SECRET
+    reset_password_token_lifetime_seconds = auth_config.RESET_PASSWORD_TOKEN_EXP
     verification_token_secret = SECRET
+    verification_token_lifetime_seconds = auth_config.VERIFY_TOKEN_EXP
 
     async def validate_password(
         self,
@@ -53,6 +55,11 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     ):
         print(f"User {user.id} has forgot their password. Reset token: {token}")
 
+    async def on_after_reset_password(
+        self, user: User, request: Optional[Request] = None
+    ):
+        print(f"User {user.id} has reset their password.")
+
     async def on_after_request_verify(
         self, user: User, token: str, request: Optional[Request] = None
     ):
@@ -63,15 +70,15 @@ async def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db
     yield UserManager(user_db)
 
 
-bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
+bearer_transport = BearerTransport(tokenUrl="auth/login")
 
 
 def get_redis_strategy() -> RedisStrategy:
-    return RedisStrategy(redis_client, lifetime_seconds=3600)
+    return RedisStrategy(redis_client, lifetime_seconds=auth_config.AUTH_TOKEN_EXP)
 
 
 auth_backend = AuthenticationBackend(
-    name="jwt",
+    name="redis",
     transport=bearer_transport,
     get_strategy=get_redis_strategy,
 )

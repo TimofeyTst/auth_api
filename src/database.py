@@ -21,7 +21,6 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     pass
 
 
-# TODO: Remove from this file?
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
