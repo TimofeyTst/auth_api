@@ -1,16 +1,24 @@
 from typing import Any
 
-from pydantic import PostgresDsn, root_validator
+from pydantic import root_validator
 from pydantic_settings import BaseSettings
 
 from src.constants import Environment
 
 
 class Config(BaseSettings):
-    DATABASE_URL: PostgresDsn
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: str
+    POSTGRES_DB: str
+
     REDIS_HOST: str
     REDIS_PORT: str
     REDIS_PASSWORD: str
+
+    SITE_DOMAIN: str = "myapp.com"
+
     ENVIRONMENT: Environment = Environment.PRODUCTION
 
     SENTRY_DSN: str | None
