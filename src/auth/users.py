@@ -8,6 +8,7 @@ from fastapi_users import (
     FastAPIUsers,
     InvalidPasswordException,
     UUIDIDMixin,
+    exceptions,
 )
 from fastapi_users.authentication import (
     AuthenticationBackend,
@@ -52,6 +53,14 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             raise InvalidPasswordException(
                 reason="Password must contain at least one lower character, one upper character, digit or special symbol"
             )
+
+        await self.validate_username(user.username)
+
+    async def validate_username(self, username: str):
+        user = await self.user_db.get_user_by_username(username)
+
+        if user is not None:
+            raise exceptions.UserAlreadyExists()
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         print(f"User {user.id} has registered.")

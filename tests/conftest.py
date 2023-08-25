@@ -6,6 +6,7 @@ import pytest_asyncio
 from async_asgi_testclient import TestClient
 
 from src.main import app
+from src.database import Base, engine
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -14,6 +15,15 @@ def run_migrations() -> None:
 
     print("running migrations..")
     os.system("alembic upgrade head")
+
+
+@pytest.fixture(autouse=True, scope='session')
+async def prepare_database():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
 
 
 @pytest.fixture(scope="session")

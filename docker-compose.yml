@@ -49,7 +49,7 @@ services:
     environment:
       - POSTGRES_USER=auth
       - POSTGRES_PASSWORD=auth
-      - POSTGRES_DB=auth_test
+      - POSTGRES_DB=auth
     volumes:
       - test_pg_data:/var/lib/postgresql/data
     ports:

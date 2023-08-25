@@ -1,6 +1,6 @@
 from typing import Any
 
-from pydantic import root_validator
+from pydantic import FieldValidationInfo, field_validator
 from pydantic_settings import BaseSettings
 
 from src.constants import Environment
@@ -29,12 +29,12 @@ class Config(BaseSettings):
 
     APP_VERSION: str = "1"
 
-    @root_validator(skip_on_failure=True)
-    def validate_sentry_non_local(cls, data: dict[str, Any]) -> dict[str, Any]:
-        if data["ENVIRONMENT"].is_deployed and not data["SENTRY_DSN"]:
+    @field_validator("SENTRY_DSN")
+    def validate_sentry_non_local(cls, value: str, info: FieldValidationInfo):
+        environment = info.data.get("ENVIRONMENT")
+        if environment and environment.is_deployed and not value:
             raise ValueError("Sentry is not set")
-
-        return data
+        return value
 
 
 settings = Config()
