@@ -3,7 +3,7 @@ version: '3.7'
 services:
   auth_api:
     container_name: auth_api
-    image: auth_api_image
+    image: auth_api
     env_file:
       - .env
     build:

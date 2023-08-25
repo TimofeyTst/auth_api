@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "rest-api"
+name = "auth_api"
 version = "0.1.0"
 description = ""
 authors = ["TimofeyTst <yarik.mist@gmail.com>"]
 readme = "README.md"
-packages = [{include = "rest_api"}]
+packages = [{include = "auth_api"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"

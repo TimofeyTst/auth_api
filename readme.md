@@ -1,4 +1,4 @@
-# Сервис управления рассылками
+# Auth api
 ## Fast setup
 Предварительно нужно создать файл ```.env``` в корне проекта по шаблону .env.example
 
@@ -24,7 +24,6 @@ docker compose exec auth_api migrate
 ```shell
 docker compose exec auth_api downgrade -1  # or -2 or base or hash of the migration
 ```
-
 
 ### Linter
 ```shell
@@ -64,7 +63,7 @@ SENTRY_DSN=https://123456789.ingest.sentry.io/987654321
 
 Запустить контейнер
 ```shell
-docker network create scheduled_main
+docker network create auth_main
 docker-compose -f docker-compose.prod.yml up -d --build
 ```
 
